@@ -47,7 +47,7 @@ export async function getDependencies(packageType: 'deb' | 'rpm', buildDir: stri
 	}
 
 	// Get the files for which we want to find dependencies.
-	const canAsar = false; // TODO@esm ASAR disabled in ESM
+	const canAsar = true;
 	const nativeModulesPath = path.join(buildDir, 'resources', 'app', canAsar ? 'node_modules.asar.unpacked' : 'node_modules');
 	const findResult = spawnSync('find', [nativeModulesPath, '-name', '*.node']);
 	if (findResult.status) {

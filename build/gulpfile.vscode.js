@@ -295,7 +295,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(jsFilter)
 			.pipe(util.rewriteSourceMappingURL(sourceMappingURLBase))
 			.pipe(jsFilter.restore)
-			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), [
+			.pipe(createAsar(process.cwd(), [
 				'**/*.node',
 				'**/@vscode/ripgrep/bin/*',
 				'**/node-pty/build/Release/*',
@@ -306,9 +306,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				'**/@vscode/vsce-sign/bin/*',
 			], [
 				'**/*.mk',
-				'!node_modules/vsda/**' // stay compatible with extensions that depend on us shipping `vsda` into ASAR
 			], [
-				'node_modules/vsda/**' // retain copy of `vsda` in node_modules for internal use
+				'node_modules/vsda/**', // retain copy of `vsda` in node_modules for internal use
 			], 'node_modules.asar'));
 
 		let all = es.merge(
