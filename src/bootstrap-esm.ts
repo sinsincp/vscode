@@ -24,15 +24,25 @@ if (process.env['ELECTRON_RUN_AS_NODE'] || process.versions['electron']) {
 		}
 		return false;
 	}
+	function normalizeDriveLetter(path) {
+		if (process.platform === 'win32'
+			&& path.length >= 2
+			&& (path.charCodeAt(0) >= 65 && path.charCodeAt(0) <= 90 || path.charCodeAt(0) >= 97 && path.charCodeAt(0) <= 122)
+			&& path.charCodeAt(1) === 58) {
+			return path[0].toLowerCase() + path.slice(1);
+		}
+		return path;
+	}
 	export async function initialize({ resourcesPath, asarPath }) {
-		globalThis.__resourcesPath = resourcesPath;
+		globalThis.__resourcesPath = normalizeDriveLetter(resourcesPath);
 		globalThis.__asarPath = asarPath;
 	}
 	export async function resolve(specifier, context, nextResolve) {
 		if (!isRelativeSpecifier(specifier) && context.parentURL) {
 			const currentPath = fileURLToPath(context.parentURL);
-			if (currentPath.startsWith(globalThis.__resourcesPath)) {
-				const asarPath = currentPath.replace(globalThis.__resourcesPath, globalThis.__asarPath);
+			const normalizedCurrentPath = normalizeDriveLetter(currentPath);
+			if (normalizedCurrentPath.startsWith(globalThis.__resourcesPath)) {
+				const asarPath = normalizedCurrentPath.replace(globalThis.__resourcesPath, globalThis.__asarPath);
 				context.parentURL = pathToFileURL(asarPath);
 			}
 		}
